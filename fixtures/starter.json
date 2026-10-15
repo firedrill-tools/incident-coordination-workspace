@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "version": 1,
+  "incident": { "id": "INC-101", "title": "Checkout latency", "severity": "SEV-2", "status": "investigating", "owner": "Leah", "revision": 1 },
+  "service": { "name": "checkout-api", "status": "degraded", "revision": 1 },
+  "observations": [
+    { "id": "OBS-1", "source": "metrics", "text": "Checkout p95 latency 3.8 seconds; elevated error rate", "service_status": "degraded" },
+    { "id": "OBS-2", "source": "customer_report", "text": "One customer says checkout appeared recovered", "service_status": "unknown" }
+  ],
+  "proposals": [],
+  "updates": [],
+  "slack_posts": [],
+  "audit": []
+}

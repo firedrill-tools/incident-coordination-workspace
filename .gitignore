@@ -1,0 +1,9 @@
+backend/node_modules/
+backend/dist/
+backend/.mastra/
+frontend/node_modules/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+workspace.json
+.env
+.DS_Store
