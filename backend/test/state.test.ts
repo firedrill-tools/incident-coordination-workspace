@@ -61,8 +61,8 @@ test("HTTP API returns the same committed state", async () => {
 
 test("Mastra tools can read and propose without committing", async () => {
   const { file, workspace } = setup();
-  process.env.INCIDENT_WORKSPACE_FILE = file;
-  const { readWorkspace, proposeUpdate } = await import("../src/mastra/incident-agent.js");
+  const { createIncidentTools } = await import("../src/mastra/incident-agent.js");
+  const { readWorkspace, proposeUpdate } = createIncidentTools(new Workspace(file));
   const observed = await readWorkspace.execute!({}, {} as never) as State;
   assert.equal(observed.incident.status, "investigating");
   const result = await proposeUpdate.execute!({ status: "escalated", owner: "Nora", summary: "Errors elevated", evidenceIds: ["OBS-1"] }, {} as never) as { proposal?: { id: string } };

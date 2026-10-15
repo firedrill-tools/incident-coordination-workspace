@@ -2,7 +2,14 @@
   "name": "incident-coordination-frontend",
   "version": "0.1.0",
   "private": true,
-  "scripts": { "dev": "next dev", "build": "next build", "start": "next start", "typecheck": "tsc --noEmit" },
+  "scripts": {
+    "postinstall": "node scripts/patch-argparse.cjs",
+    "test:dependencies": "node --test tests/dependency.test.mjs",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@ag-ui/mastra": "2.0.1",
     "@copilotkit/react-core": "1.79.0",
@@ -12,5 +19,17 @@
     "react": "19.2.2",
     "react-dom": "19.2.2"
   },
-  "devDependencies": { "@types/node": "24.0.0", "@types/react": "19.0.0", "@types/react-dom": "19.0.0", "typescript": "5.9.3" }
+  "devDependencies": {
+    "@types/node": "24.0.0",
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "gray-matter@4": {
+      "js-yaml@3": {
+        "argparse": "2.0.1"
+      }
+    }
+  }
 }
