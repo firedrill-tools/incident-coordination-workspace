@@ -7,3 +7,6 @@ frontend/tsconfig.tsbuildinfo
 workspace.json
 .env
 .DS_Store
+frontend/.e2e/
+frontend/test-results/
+frontend/playwright-report/

@@ -5,11 +5,11 @@ import { Conflict, Workspace } from "./state.js";
 
 const root = path.dirname(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 const file = process.env.INCIDENT_WORKSPACE_FILE || path.join(root, "..", "workspace.json");
-export function createApp(stateFile = file) {
+export function createApp(stateFile = file, webOrigin = process.env.INCIDENT_WEB_ORIGIN || "http://localhost:3000") {
   const workspace = new Workspace(stateFile);
   const app = express();
   app.use(express.json());
-  app.use((_req, res, next) => { res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS"); res.setHeader("Access-Control-Allow-Headers", "Content-Type"); next(); });
+  app.use((_req, res, next) => { res.setHeader("Access-Control-Allow-Origin", webOrigin); res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS"); res.setHeader("Access-Control-Allow-Headers", "Content-Type"); next(); });
   app.options("/{*path}", (_req, res) => res.sendStatus(204));
   app.get("/workspace", (_req, res) => res.json(workspace.read()));
   app.post("/proposals/:id/decision", (req, res) => {

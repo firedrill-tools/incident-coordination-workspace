@@ -30,8 +30,23 @@ The starter includes degraded checkout metrics (`OBS-1`) and a single customer's
 
 Approved updates appear in the timeline and one local `#inc-checkout` mirror post with exact evidence IDs and owner. No external Slack or service is contacted. State is a one-process JSON demo, not a concurrent operations system. Reset from `fixtures/starter.json`.
 
-All 11 backend checks cover conflicting status, evidence, escalation, ownership, stale service state, rejection and committed API state, plus parser compatibility and the actual HTTP/AG-UI bridge used by CopilotKit. A scripted Mastra model reads the workspace, proposes an update and streams a terminal answer; its proposal cannot change incident status, owner or local channel posts. A scripted provider failure reaches the bridge as an error without successful completion or state changes. These models are injected only by tests. Frontend typecheck/build, three dependency-contract checks (`npm run test:dependencies`) and the previously recorded local browser flow cover presentation, installation and approval. These tests do not prove live Anthropic judgment. Live model proof and the new Firedrill integration remain pending. This private repository has no license pending publication decisions.
+All 17 backend checks cover incident evidence/authorization, the actual HTTP/AG-UI bridge, parser compatibility, synchronous partial JSON, legacy schema validation and bounded response reads. The 11 frontend dependency checks also verify accessible math output and inherited trust settings. Both full npm audits report zero findings at the 2026-10-15 snapshot. A production-only backend install/import was also verified without the test clients.
 
-Both backend and frontend use a scoped argparse override with a guarded install-time repair to remove `sprintf-js` while retaining js-yaml's legacy CLI contract. See [backend/scripts/README.md](backend/scripts/README.md) and [frontend/scripts/README.md](frontend/scripts/README.md). The Express adapter removes the unused developer CLI/workspace-globber chain, including `braces`. At the 2026-10-15 snapshot, the backend runtime audit has zero findings. The full backend audit reports four low findings through test-only AG-UI/client dependencies; the frontend reports eleven low findings through older AI SDK utilities and KaTeX consumers. There are no remaining moderate/high findings in either install. These low findings remain technical follow-up, and the application has no production-facing server configuration.
+Two automated Chromium cases run the production-built Next.js application through CopilotKit, the real remote AG-UI bridge, Mastra's SDK loop and application tools/API. They verify proposal-only behavior, exact approval effects, styled math, unsafe-HTML removal, visible provider failure and a subsequent recovery request. Chat waits for agent discovery before accepting input; errors remain visible until a new run starts. Scripted models live only in the test host. These checks prove transport and application behavior, not live Anthropic judgment. Live model proof, the new Firedrill integration and publication/license decisions remain pending.
+
+### Reproduce browser verification
+
+Install both backend and frontend dependencies first, then from the frontend directory:
+
+```sh
+npm run build --prefix ../backend
+npx playwright install chromium
+NEXT_PUBLIC_INCIDENT_API_URL=http://127.0.0.1:3826 COPILOTKIT_TELEMETRY_DISABLED=true npm run build
+npm run test:e2e
+```
+
+The test runner owns local ports 3326/3426/3826 and resets `frontend/.e2e/workspace.json` before each case. It never resets a regular workspace. Screenshots/traces are written under `frontend/test-results/`; CI uploads synthetic browser evidence. Run an ordinary `npm run build` afterward to restore the normal API address. Custom UI origins can be configured with `INCIDENT_WEB_ORIGIN` on the workspace API.
+
+Both install roots retain qualified, version-guarded postinstall repairs: argparse 2 for the legacy YAML CLI, and scoped provider-utils 3 for the old UI bridge's synchronous JSON/schema contracts. KaTeX 0.18.2 uses matching bundled styles; HTML is sanitized before math rendering while URL hardening remains enabled. See [backend/scripts/README.md](backend/scripts/README.md) and [frontend/scripts/README.md](frontend/scripts/README.md) for exact versions, attribution, contract checks and removal criteria. This remains a local synthetic application with no production server configuration.
 
 Explore related applications in the [Firedrill example catalog](https://github.com/firedrill-tools/firedrill-example-catalog). Product and setup references: [Firedrill](https://firedrill.run/) and the [official developer documentation](https://docs.firedrill.run/). Use documentation matching the qualified release; this repository records its current integration limits above.
