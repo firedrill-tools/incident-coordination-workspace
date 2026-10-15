@@ -33,3 +33,5 @@ Approved updates appear in the timeline and one local `#inc-checkout` mirror pos
 Backend tests cover conflicting status, evidence, escalation, ownership, stale service state, rejection and committed API state. Frontend typecheck/build and a local browser flow cover presentation and approval. These tests do not prove live Anthropic judgment. Live model proof and the new Firedrill integration remain pending. This private repository has no license pending publication decisions.
 
 `npm audit` still reports transitive advisories in Mastra/CopilotKit dependencies, including a high-severity `braces` issue in the local Mastra CLI dependency tree. Review updated upstream packages before public deployment. The application has no production-facing server configuration.
+
+Explore related applications in the [Firedrill example catalog](https://github.com/firedrill-tools/firedrill-example-catalog). Product and setup references: [Firedrill](https://firedrill.run/) and the [official developer documentation](https://docs.firedrill.run/). Use documentation matching the qualified release; this repository records its current integration limits above.
