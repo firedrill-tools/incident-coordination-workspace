@@ -17,9 +17,9 @@ export function workspaceFile() {
 }
 export function createIncidentTools(workspace: Workspace) {
   const readWorkspace = createTool({ id: "read-incident-workspace", description: "Read current incident, service status, evidence, proposals, updates, and synthetic Slack posts.",
-    inputSchema: z.object({}), execute: async () => workspace.read() });
+    inputSchema: z.strictObject({}), execute: async () => workspace.read() });
   const proposeUpdate = createTool({ id: "propose-incident-update", description: "Draft a status, owner and evidence-backed summary for incident commander approval. Does not change incident or post Slack.",
-    inputSchema: z.object({ status: z.enum(["investigating", "escalated", "monitoring", "resolved"]), owner: z.string().min(1), summary: z.string().min(1), evidenceIds: z.array(z.string()).min(1) }),
+    inputSchema: z.strictObject({ status: z.enum(["investigating", "escalated", "monitoring", "resolved"]), owner: z.string().min(1), summary: z.string().min(1), evidenceIds: z.array(z.string()).min(1) }),
     execute: async ({ status, owner, summary, evidenceIds }) => {
       try { return { proposal: workspace.propose(status as IncidentStatus, owner, summary, evidenceIds) }; }
       catch (error) { return { error: error instanceof Error ? error.message : String(error) }; }
