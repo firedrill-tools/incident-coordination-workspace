@@ -13,3 +13,5 @@ frontend/playwright-report/
 
 runs/
 run-output/
+
+dist/

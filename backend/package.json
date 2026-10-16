@@ -1,6 +1,6 @@
 {
   "name": "incident-coordination-backend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -10,8 +10,8 @@
     "postinstall": "node scripts/patch-argparse.cjs && node scripts/patch-ui-utils.cjs",
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test dist/test/*.test.js",
-    "api": "node dist/src/api.js",
-    "agent": "node dist/src/api.js"
+    "api": "node dist/src/cli.js serve",
+    "agent": "node dist/src/cli.js serve"
   },
   "dependencies": {
     "@ag-ui/encoder": "1.0.2",
@@ -40,5 +40,8 @@
     "@ai-sdk/ui-utils@1.2.11": {
       "@ai-sdk/provider-utils": "3.0.30"
     }
+  },
+  "bin": {
+    "incident-workspace": "dist/src/cli.js"
   }
 }

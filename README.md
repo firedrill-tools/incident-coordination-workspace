@@ -1,20 +1,21 @@
 # Incident coordination workspace
 
-A CopilotKit interface for a fictional checkout incident. A Mastra agent reads the current incident, service telemetry, customer reports, and synthetic Slack history, then proposes an evidence-backed status or owner update. A commander reviews the proposal. Approval changes the incident and writes a matching local channel post; rejection leaves both unchanged.
+A Next.js/CopilotKit workspace and Mastra/Anthropic agent coordinate fictional incidents using current telemetry, customer reports and a synthetic Slack mirror. Chat can read and propose a status/owner/summary backed by exact evidence. A separate commander decision changes the incident and records one matching local channel post. No external Slack or service-status provider is connected; commander/monitor names are fixture identities without real authentication.
 
 ## Run locally
 
-Requires Node 22.13+ and npm.
+Node22.13+ and npm are required. Model-free initialization, workspace review and commander decisions need no key.
 
 ```sh
-cp fixtures/starter.json workspace.json
 cd backend
 npm ci
-npm test
-npm run api
+npm run build
+node dist/src/cli.js datasets
+node dist/src/cli.js init --workspace run-output/workspace.json --case conflicting-report
+node dist/src/cli.js serve --workspace run-output/workspace.json --offline
 ```
 
-The workspace API also owns chat at `/agent`; run one backend process. For live chat, set `ANTHROPIC_API_KEY` and an enabled `INCIDENT_MODEL` using `anthropic/<model>` before starting it. Then start the frontend:
+In another terminal:
 
 ```sh
 cd frontend
@@ -22,49 +23,53 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. CopilotKit's actual HttpAgent uses INCIDENT_AGENT_URL, default `http://127.0.0.1:8126/agent`; the UI reads that same workspace API. The backend owns a fresh Mastra agent and the official local MastraAgent AG-UI bridge per operation. `npm run agent` is an alias for the same API command; run only one. The generic Mastra HTTP server remains a scripted compatibility test fixture, without a native production entry point. Rebuild the backend after editing source. Missing provider/model configuration produces a private failed receipt; setup/owner review work without a key, and no model fallback is supplied.
+Open http://localhost:3000. For actual chat, set ANTHROPIC_API_KEY and an enabled INCIDENT_MODEL using anthropic/<model>, then omit --offline. Explicit --model overrides that variable; --base-url accepts an explicit HTTPS or owned loopback Messages URL for controlled qualification. Ambient ANTHROPIC_BASE_URL is not borrowed. No key/model fallback exists; missing configuration produces private failed evidence. `.env.example` lists variables; export backend variables yourself. No paid provider was used in qualification.
 
-## Evidence and decisions
+The one backend API serves committed workspace data and owned `/agent` chat. CopilotKit's actual HttpAgent points at INCIDENT_AGENT_URL, default http://127.0.0.1:8126/agent. NEXT_PUBLIC_INCIDENT_API_URL is baked at frontend build time; normal default is http://localhost:8126 and CORS defaults to http://localhost:3000. `npm run api` serves default run-output/workspace.json; npm run agent is an alias. Run one process. --port0 requests an ephemeral loopback port. The old generic Mastra remote HTTP host remains a scripted compatibility fixture without a native production entry point.
 
-The starter includes degraded checkout metrics (`OBS-1`) and a single customer's recovery report (`OBS-2`). A customer report cannot justify `monitoring` or `resolved`. The latest observation must be healthy **metrics** and cited by the proposal. The UI's “Simulate healthy metrics” button appends a local telemetry record and changes the service revision. Every proposal records incident and service revisions. If either changes before decision, approval stops as stale. Only the synthetic commander `Morgan` can decide; this name is a local fixture identity, not production authentication.
+## Data and separate decisions
 
-Approved updates appear in the timeline and one local `#inc-checkout` mirror post with exact evidence IDs and owner. No external Slack or service is contacted. Current writes use a persistent SQLite mutex to serialize cooperating local processes, exact source/instance rechecks and atomic replacement. Uncooperative filesystem writers remain outside an OS boundary; legacy state without an instance UUID has no cross-reset guarantee. Do not unlink the mutex while processes may still use it. Rich exclusive reset/initialization remains planned.
-
-The original17 backend checks covered incident evidence/authorization, the actual HTTP/AG-UI bridge, parser compatibility, synchronous partial JSON, legacy schema validation and bounded response reads. The11 frontend dependency checks verify accessible math output and inherited trust settings. Both full npm audits report zero findings at the 2026-10-15 snapshot. A production-only backend install/import was also verified without the test clients.
-
-Two automated Chromium cases run the production-built Next.js application through CopilotKit HttpAgent, actual Anthropic SDK over owned HTTP, the official local AG-UI bridge, Mastra's SDK loop and application tools/API. They verify proposal-only behavior, exact approval effects, styled math, unsafe-HTML removal, visible provider failure and a subsequent recovery request. Chat waits for agent discovery before accepting input; errors remain visible until a new run starts. Controlled provider responses live only in the owned test host. These checks prove transport and application behavior, not live Anthropic judgment. Live model proof, the new Firedrill integration and publication/license decisions remain pending.
-
-### Reproduce browser verification
-
-Install both backend and frontend dependencies first, then from the frontend directory:
+`backend/data/index.json` pins incident-populations1.0.0 with twelve starter/busy/ambiguous/boundary cases. Busy has10observations/100proposals/64updates/64matchinglocalposts/24pending/12rejected. Other cases cover conflicting reports/metrics, healthy monitoring, alternate commander/channel, stale or missing evidence, already resolved state, hostile/Unicode text and maximum safe revision. Ordered imported audit describes the original seed; subsequent valid changes are current state. Prior model/authentication/real Slack evidence stays unknown. Dataset/task/provenance labels and proposal authority hashes are excluded from model business context.
 
 ```sh
-npm run build --prefix ../backend
-npx playwright install chromium
-NEXT_PUBLIC_INCIDENT_API_URL=http://127.0.0.1:3826 COPILOTKIT_TELEMETRY_DISABLED=true npm run build
-npm run test:e2e
+node backend/dist/src/cli.js workspace --workspace backend/run-output/workspace.json
+node backend/dist/src/cli.js reset --workspace backend/run-output/workspace.json --destination backend/run-output/fresh.json
 ```
 
-The test runner owns local ports3326/3826 plus an ephemeral loopback provider and resets `frontend/.e2e/workspace.json` before each case. It never resets a regular workspace. Screenshots/traces are written under `frontend/test-results/`; CI uploads synthetic browser evidence. Run an ordinary `npm run build` afterward to restore the normal API address. Custom UI origins can be configured with `INCIDENT_WEB_ORIGIN` on the workspace API.
+Initialization creates exclusive0600 source/metadata with a fresh UUID. Reset preserves the old source, metadata, mutex and evidence at a distinct destination. Collisions and corrupt/missing/foreign authority reject without repair. Two-file initialization is not atomic; an interrupted partial destination remains untouched and needs a fresh path. Legacy original fixtures without UUID lack cross-reset guarantees.
 
-Both install roots retain qualified, version-guarded postinstall repairs: argparse 2 for the legacy YAML CLI, and scoped provider-utils 3 for the old UI bridge's synchronous JSON/schema contracts. KaTeX 0.18.2 uses matching bundled styles; HTML is sanitized before math rendering while URL hardening remains enabled. See [backend/scripts/README.md](backend/scripts/README.md) and [frontend/scripts/README.md](frontend/scripts/README.md) for exact versions, attribution, contract checks and removal criteria. This remains a local synthetic application with no production server configuration.
+Strict bounded schemas and original ambiguous JSON rejection protect incident/service/observation/proposal/decision/update/post/audit. Each proposal hashes its exact payload and complete incident/service/evidence/policy source. Separate commander decisions capture that hash/revision and current source; approval rechecks full equality and current telemetry before one exact update/post. Customer anecdotes cannot establish recovery; latest healthy metrics must be cited. Escalation cites current degraded metrics. Stale rejection remains possible. Persistent SQLite mutexes serialize cooperating local processes, with exact source/inode/instance checks and atomic replacement. Uncooperative writers are outside an OS boundary; do not unlink an active mutex. Previously saved unbound proposals are not migrated.
 
-Explore related applications in the [Firedrill example catalog](https://github.com/firedrill-tools/firedrill-example-catalog). Product and setup references: [Firedrill](https://firedrill.run/) and the [official developer documentation](https://docs.firedrill.run/). Use documentation matching the qualified release; this repository records its current integration limits above.
+The UI follows committed API state, derives commander/channel from source, surfaces readable errors, blocks writes while reads are unavailable and prevents late reads replacing confirmed actions. Search and bounded evidence/review/timeline/channel lists handle imported history. Native Send/Stop uses public accessible slots. Markdown is sanitized before trusted KaTeX0.18.2 rendering, with URL hardening retained.
 
+## Owned native runtime and evidence
 
-## Source/API development checkpoint
+Each operation owns a fresh actual Mastra1.77 agent/official local MastraAgent2.0.1 bridge and explicit Anthropic3.0.103 SDK/Undici7.30.1 transport. Original Messages JSON must finish with end_turn text or one strict tool_use call before SDK dispatch. Unfinished/refused/parallel/mixed/replayed/unknown results cannot save proposals. A genuine current read precedes a proposal. Model tools cannot approve or post. Caller assistant/state/tools/context cannot create server history or authority.
 
-29 backend checks now include strict bounded incident/service/observation/proposal/decision/update/post/audit contracts and original duplicate/nonfinite/UTF-8 JSON rejection. Saved proposal recipient/summary/evidence/source edits cannot change the immutable proposal hash. Approval requires exact current incident/service/evidence/policy equality and a separately captured commander decision. Current degraded or healthy metrics must support the proposed status; customer anecdotes cannot justify recovery. Stale rejection remains possible. Exact update/post/hash/channel/actor coherence and actual independent-process approval create one committed update and one local post. Boolean revisions, unknown API fields, unsupported source shapes, duplicate IDs, invalid authority, exhausted revisions and replaced UUID instances are rejected without repair. Previously saved unbound proposals are not migrated implicitly. Fixture commander/monitor names are not real authentication.
+The public LanguageModelV3 adapter feeds each completely qualified native JSON turn into Mastra's official stream; native incremental Anthropic SSE is not claimed. The API retains events until exact final text, current state after cleanup, evidence and awaited owned SDK calls/HTTP/Mastra shutdown are verified. It then emits actual AG-UI with EventEncoder. Prepared delivery is not client acknowledgement. Partial proposals remain pending after later failure.
 
-This is an intermediate source checkpoint. Owned Anthropic native original completion/usage/lifecycle, normal remote AG-UI/CopilotKit production paths, broader UI error/outage behavior, rich source populations/private CLI and fresh complete distributions remain active in PLAN.md. Existing scripted SDK/browser checks do not prove live Anthropic behavior, billing or Firedrill integration. All external-input gates remain parked.
+Budgets:8prepared calls/2048requested output/zero retry/30-second HTTP/120-second default operation;4active runs/32threads/eight genuine completed turns/512attempt IDs. Failed or duplicate runs need a new explicit run ID. Private0700 UUID directories/0600 receipts keep original source bytes/hash, requests/responses/unknown fields/provider IDs/counters, separate normalized SDK observations, actual tool effects, protocol preparation and cleanup. Unknown/invalid/zero values remain distinct; cost is unknown. Partial HTTP retains a bounded decoded prefix without claiming a complete body/usage. Recording/source/close failures cannot release success; failed close and unknown durability remain unconfirmed. These are cooperative deadlines/retained decoded caps, without hard wire/heap/wall/OS containment.
 
+## Verify and distribute
 
-## Owned native development checkpoint
+```sh
+npm ci --prefix backend
+npm test --prefix backend
+node scripts/build-datasets.mjs --check
+npm ci --prefix frontend
+npm run test:dependencies --prefix frontend
+npm run typecheck --prefix frontend
+NEXT_PUBLIC_INCIDENT_API_URL=http://127.0.0.1:3826 npm run build --prefix frontend
+cd frontend
+npx playwright install chromium
+npm run test:e2e
+cd ..
+node scripts/package.mjs
+node scripts/check-package.mjs
+```
 
-51 backend checks and2 production Chromium flows now qualify the owned Anthropic3.0.103/Undici7.30.1/Mastra1.77/official MastraAgent2.0.1 path. Original Messages JSON must finish end_turn text or one strict tool_use call; max_tokens/refusal/absent/parallel/mixed/forged/replayed/unknown content cannot dispatch proposals. A complete current read precedes a proposal and binds incident/service/evidence/policy. Public LanguageModelV3 adaptation turns each fully qualified JSON turn into the official Mastra stream; native incremental Anthropic SSE is not claimed. The API retains events until exact final text, source reread, evidence and Mastra/HTTP cleanup are checked, then releases actual AG-UI via EventEncoder. Fixture commander and monitor identities remain synthetic.
+80 backend/11 frontend dependency checks and12 production Chromium flows qualify actual pinned SDK/AG-UI/CopilotKit behavior over owned HTTP, current source decisions, independent process serialization, native cancellation/deadline/evidence/cleanup, all12 populations/private CLI/reset and UI outage/stale/stop/busy/alternate behavior. Controlled provider responses establish protocol and application behavior, not semantic model quality or billing. The test-only reset host creates fresh private case directories and preserves older state/evidence; it exposes no controls in the product API. Screenshots were visually inspected.
 
-Each run owns its agent/bridge/transport and private0700 UUID/0600 evidence. Eight prepared calls,2048 requested output,zero retries,30-second HTTP/120-second default operation budgets and four active runs/32threads/eight completed turns/512attempt IDs are explicit bounds. Only genuine completed server history enters subsequent context. Caller state/assistant/tools/context cannot supply authority. Raw original JSON/bytes/unknown fields/IDs/observed-vs-unknown/invalid/zero counters and normalized SDK values are distinct; cost is unknown. Missing configuration and partial/failed operations preserve evidence, with pending proposals retained after later failure. Recording/source/close errors cannot release success; unknown durability and failed close stay unconfirmed. Cancellation/shutdown drains actual native HTTP and only that runtime's tasks. Decoded caps/source I/O are not hard wire/heap/OS/wall limits. Prepared protocol delivery is not client acknowledgement.
+`check-package.mjs` verifies repeated portable deterministic source bytes and the exact manifest, then installs/builds/tests both projects outside checkout. It separately installs production-only backend dependencies and exercises all12 private CLI populations/reset, normal CLI-hosted native Anthropic/Mastra/AG-UI API with separate commander approval, missing-key receipts and SIGTERM cleanup. Original delivered files must remain unchanged. CI retains source, qualification and synthetic browser screenshots. Both install roots retain the qualified version-guarded compatibility repairs documented in backend/frontend scripts/README.md; no vendor/global-cache ownership patch was added.
 
-The source/API29 checkpoint passed Linux38915740714. Current native51/two-browser changes are the next intermediate checkpoint. Rich starter/busy/ambiguous/boundary populations, exclusive private model-free CLI, broader UI state/error/stop qualification and fresh complete production distributions remain active in PLAN.md. Live Anthropic semantics/billing, qualified new Firedrill saved scenarios/results, real Slack/authentication and publication/license stay parked. No paid model or real channel post occurred. API changes and posts remain synthetic local records.
-
-Primary native API references: [Anthropic tool use](https://platform.claude.com/docs/claude/docs/tool-use), [Mastra generate](https://mastra.ai/reference/agents/generate) and the pinned installed SDK/public type declarations. Exact lockfiles and test results govern this implementation.
+See [PLAN.md](PLAN.md), [COMPATIBILITY.md](COMPATIBILITY.md) and [scenarios](scenarios/README.md). Actual enabled model/key/budget plus semantic/billing review, qualified new Firedrill saved scenarios/results, real connectors and publication/license remain parked. No paid provider, real Slack action or license is claimed. [Example catalog](https://github.com/firedrill-tools/firedrill-example-catalog), [Firedrill](https://firedrill.run/) and [documentation](https://docs.firedrill.run/) provide portfolio context; matching release qualification is required. Primary APIs: [Anthropic tool use](https://platform.claude.com/docs/claude/docs/tool-use), [Mastra generate](https://mastra.ai/reference/agents/generate), and pinned installed public declarations.

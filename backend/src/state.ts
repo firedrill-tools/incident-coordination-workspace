@@ -3,6 +3,7 @@ import { dirname, join, basename } from "node:path";
 import { randomUUID } from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
 import { Conflict, type State, type Proposal, type Source, type IncidentStatus, validateState, proposalInput, decisionInput, observationInput, proposalHash, source, same, policy, validateEvidence, postText, hash } from "./schema.js";
+import { authority } from "./datasets.js";
 import { parseJSON } from "./json.js";
 export { Conflict, validateState, source } from "./schema.js";
 export type { State, Proposal, Source, IncidentStatus } from "./schema.js";
@@ -40,10 +41,10 @@ export class Workspace {
   private readonly instance: string | null;
   private readonly lock: string;
   constructor(file: string) {
-    const s = load(file); this.file = realpathSync(file); this.instance = s.state.instance_id ?? null;
+    const s = load(file); authority(file, s.state); this.file = realpathSync(file); this.instance = s.state.instance_id ?? null;
     this.lock = join(dirname(this.file), `.${basename(this.file)}.incident-lock.sqlite`);
   }
-  snapshot() { const s = load(this.file); if ((s.state.instance_id ?? null) !== this.instance) throw new Conflict("workspace instance changed"); return s; }
+  snapshot() { const s = load(this.file); authority(this.file, s.state); if ((s.state.instance_id ?? null) !== this.instance) throw new Conflict("workspace instance changed"); return s; }
   read(): State { return this.snapshot().state; }
   private transaction<T>(fn: (state: State) => T): T {
     if (existsSync(this.lock) && (!lstatSync(this.lock).isFile() || lstatSync(this.lock).isSymbolicLink())) throw new Error("invalid workspace mutex");

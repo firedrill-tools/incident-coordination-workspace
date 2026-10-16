@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
+import { DATASET_SHA256 } from "./_dataset-manifest.js";
 
 export class Conflict extends Error {}
 export const revision = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
@@ -19,7 +20,7 @@ export const decisionInput = z.strictObject({ revision, decision: z.enum(["appro
 export const observationInput = z.strictObject({ status: health, text: z.string().min(1).max(8000).refine(v => !!v.trim()), actor: line(160) });
 const proposalSchema = z.strictObject({ id: identifier, status, owner: line(160), summary: z.string().min(1).max(800).refine(v => !!v.trim()), evidence_ids: z.array(identifier).min(1).max(1000), incident_revision: revision, service_revision: revision, revision: z.union([z.literal(1), z.literal(2)]), decision: z.enum(["pending", "approved", "rejected"]), actor: line(160).nullable(), source: sourceSchema, content_sha256: digestSchema, decision_record: decisionSchema.nullable() });
 const updateSchema = z.strictObject({ id: identifier, proposal_id: identifier, proposal_hash: digestSchema, status, owner: line(160), summary: z.string().min(1).max(800), evidence_ids: z.array(identifier).min(1).max(1000) });
-export const stateSchema = z.strictObject({ synthetic: z.literal(true), version: z.literal(1), instance_id: z.string().uuid().optional(), policy: policySchema.optional(), incident: incidentSchema, service: serviceSchema, observations: z.array(observationSchema).min(1).max(1000), proposals: z.array(proposalSchema).max(1000), updates: z.array(updateSchema).max(1000), slack_posts: z.array(z.strictObject({ id: identifier, update_id: identifier, channel: policySchema.shape.channel, text: z.string().min(1).max(2400) })).max(1000), audit: z.array(z.strictObject({ action: z.enum(["propose", "decide", "observe"]), target: identifier, outcome: z.enum(["pending", "approved", "rejected", "healthy", "degraded"]) })).max(5000) });
+export const stateSchema = z.strictObject({ synthetic: z.literal(true), version: z.literal(1), instance_id: z.string().uuid().optional(), dataset: z.strictObject({ id: z.literal("incident-populations"), version: z.literal("1.0.0"), case_id: identifier, source_sha256: z.literal(DATASET_SHA256) }).optional(), policy: policySchema.optional(), incident: incidentSchema, service: serviceSchema, observations: z.array(observationSchema).min(1).max(1000), proposals: z.array(proposalSchema).max(1000), updates: z.array(updateSchema).max(1000), slack_posts: z.array(z.strictObject({ id: identifier, update_id: identifier, channel: policySchema.shape.channel, text: z.string().min(1).max(2400) })).max(1000), audit: z.array(z.strictObject({ action: z.enum(["propose", "decide", "observe"]), target: identifier, outcome: z.enum(["pending", "approved", "rejected", "healthy", "degraded"]) })).max(5000) });
 export type State = z.infer<typeof stateSchema>;
 export type IncidentStatus = z.infer<typeof status>;
 export type Proposal = z.infer<typeof proposalSchema>;

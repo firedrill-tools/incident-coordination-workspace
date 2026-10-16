@@ -1,4 +1,5 @@
 import express from "express";
+import { existsSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Conflict, Workspace, parseJSON } from "./state.js";
@@ -8,10 +9,10 @@ import { decisionInput, observationInput } from "./schema.js";
 
 const root = path.dirname(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 const file = process.env.INCIDENT_WORKSPACE_FILE || path.join(root, "..", "workspace.json");
-export function createApp(stateFile = file, webOrigin = process.env.INCIDENT_WEB_ORIGIN || "http://localhost:3000", runtimeOptions: RuntimeOptions = {}) {
+export function createApp(stateFile = file, webOrigin = process.env.INCIDENT_WEB_ORIGIN || "http://localhost:3000", runtimeOptions: RuntimeOptions = {}, includeAgent = true) {
   const workspace = new Workspace(stateFile);
   const app = express();
-  const runtime = new Runtime(workspace, runtimeOptions);
+  const runtime = includeAgent ? new Runtime(workspace, runtimeOptions) : null;
   app.locals.runtime = runtime;
   app.use((_req, res, next) => { res.setHeader("Access-Control-Allow-Origin", webOrigin); res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS"); res.setHeader("Access-Control-Allow-Headers", "Content-Type"); next(); });
   app.options("/{*path}", (_req, res) => res.sendStatus(204));
@@ -23,7 +24,7 @@ export function createApp(stateFile = file, webOrigin = process.env.INCIDENT_WEB
     }
     next();
   });
-  app.post("/agent", async (req, res) => {
+  if (runtime) app.post("/agent", async (req, res) => {
     const controller = new AbortController();
     const disconnected = () => { if (!res.writableEnded) controller.abort(new Error("incident client disconnected")); };
     res.once("close", disconnected);
@@ -61,12 +62,7 @@ export function createApp(stateFile = file, webOrigin = process.env.INCIDENT_WEB
   });
   return app;
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const app = createApp(), server = app.listen(8126, "127.0.0.1", () => console.log("Incident API and owned /agent on http://127.0.0.1:8126"));
-  let stopping = false;
-  for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"] as const) process.once(signal, async () => {
-    if (stopping) return; stopping = true;
-    try { await app.locals.runtime.close(); }
-    finally { server.close(); server.closeAllConnections(); }
-  });
+if (process.argv[1] && existsSync(process.argv[1]) && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  // Let this module finish before the CLI imports createApp back from it.
+  import("./cli.js").then(({ main }) => main()).catch(error => { console.error(error); process.exitCode = 1; });
 }
