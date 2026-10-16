@@ -10,3 +10,6 @@ workspace.json
 frontend/.e2e/
 frontend/test-results/
 frontend/playwright-report/
+
+runs/
+run-output/

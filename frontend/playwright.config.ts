@@ -10,7 +10,7 @@ export default defineConfig({
       env: { INCIDENT_TEST_STATE: resolve(".e2e/workspace.json"), ANTHROPIC_API_KEY: "" },
       gracefulShutdown: { signal: "SIGTERM", timeout: 3000 } },
     { command: "npm run start -- --hostname 127.0.0.1 --port 3326", url: "http://127.0.0.1:3326", reuseExistingServer: false,
-      env: { MASTRA_BASE_URL: "http://127.0.0.1:3426", COPILOTKIT_TELEMETRY_DISABLED: "true", NEXT_TELEMETRY_DISABLED: "1" },
+      env: { INCIDENT_AGENT_URL: "http://127.0.0.1:3826/agent", COPILOTKIT_TELEMETRY_DISABLED: "true", NEXT_TELEMETRY_DISABLED: "1" },
       gracefulShutdown: { signal: "SIGTERM", timeout: 3000 } },
   ],
 });

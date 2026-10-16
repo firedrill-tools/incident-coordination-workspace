@@ -1,6 +1,3 @@
-import { Mastra } from "@mastra/core/mastra";
-import { createIncidentAgent, workspaceFile } from "./incident-agent.js";
-import { Workspace } from "../state.js";
-const incidentAgent = createIncidentAgent(new Workspace(workspaceFile()));
-
-export const mastra = new Mastra({ agents: { incidentAgent } });
+// Native production requests are hosted by Runtime in the workspace API.
+// No module-global agent/provider or ambient model fallback is constructed.
+export { Runtime } from "../runtime.js";

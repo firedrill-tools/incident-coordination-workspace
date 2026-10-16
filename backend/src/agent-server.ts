@@ -15,7 +15,5 @@ export async function createAgentApp(mastra: Mastra) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const { mastra } = await import("./mastra/index.js");
-  const app = await createAgentApp(mastra);
-  app.listen(4111, "127.0.0.1", () => console.log("Mastra agent API: http://127.0.0.1:4111"));
+  throw new Error("Use npm run api for the owned /agent runtime. Generic MastraServer is retained only for injected scripted compatibility tests.");
 }

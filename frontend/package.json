@@ -12,25 +12,26 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@ag-ui/client": "1.0.2",
     "@ag-ui/mastra": "2.0.1",
     "@copilotkit/react-core": "1.79.0",
     "@copilotkit/runtime": "1.79.0",
     "@mastra/client-js": "1.54.0",
+    "katex": "0.18.2",
     "next": "16.4.1",
     "react": "19.2.2",
     "react-dom": "19.2.2",
-    "katex": "0.18.2",
-    "secure-json-parse": "4.1.1",
-    "streamdown": "1.6.11",
+    "rehype-katex": "7.0.1",
     "rehype-sanitize": "6.0.0",
-    "rehype-katex": "7.0.1"
+    "secure-json-parse": "4.1.1",
+    "streamdown": "1.6.11"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@types/node": "24.0.0",
     "@types/react": "19.0.0",
     "@types/react-dom": "19.0.0",
-    "typescript": "5.9.3",
-    "@playwright/test": "1.64.1"
+    "typescript": "5.9.3"
   },
   "overrides": {
     "gray-matter@4": {
