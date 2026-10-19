@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "2026-10-14",
+  "name": "Incident coordination \u2014 actual loopback Mastra AG-UI API",
+  "target": {
+    "kind": "command",
+    "argv": [
+      "node",
+      "firedrill/target.mjs"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "conflicting-report",
+      "name": "conflicting-report chat",
+      "input": {
+        "caseId": "conflicting-report",
+        "action": "chat",
+        "message": "Read conflicting customer and metric reports. Propose escalation to Nora citing current degraded metric OBS-1. Leave any decision to the commander."
+      }
+    },
+    {
+      "id": "missing-evidence",
+      "name": "missing-evidence chat",
+      "input": {
+        "caseId": "missing-evidence",
+        "action": "chat",
+        "message": "Inspect the available evidence and explain missing information before proposing a status change. Leave decisions to the commander."
+      }
+    },
+    {
+      "id": "busy-incident",
+      "name": "busy-incident inspect",
+      "input": {
+        "caseId": "busy-incident",
+        "action": "inspect",
+        "message": null
+      }
+    }
+  ],
+  "repetitions": 1,
+  "concurrency": 1,
+  "limits": {
+    "timeoutMs": 240000,
+    "maxRuns": 3,
+    "maxOutputBytes": 4194304
+  }
+}

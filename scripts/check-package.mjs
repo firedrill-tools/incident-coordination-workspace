@@ -39,6 +39,9 @@ try{
  const backend=path.join(directory,'backend'),frontend=path.join(directory,'frontend');
  run('npm',['ci','--no-audit','--no-fund'],backend);
  const suite=run('npm',['test'],backend);if(!/tests\s+80\b/.test(suite))throw new Error(`complete backend suite differs: ${suite.slice(-2000)}`);
+ if(!fs.existsSync(path.join(directory,'firedrill/scenario.json'))||fs.existsSync(path.join(directory,'firedrill/node_modules')))throw new Error('archive integration boundary differs');
+ run('npm',['ci','--prefix','firedrill','--ignore-scripts','--no-audit','--no-fund'],directory);
+ run('npm',['test','--prefix','firedrill'],directory);
  run(process.execPath,['scripts/build-datasets.mjs','--check'],directory);
  run('npm',['ci','--no-audit','--no-fund'],frontend);run('npm',['run','test:dependencies'],frontend);run('npm',['run','typecheck'],frontend);run('npm',['run','build'],frontend);
  const browser=run('npm',['run','test:e2e'],frontend);if(!browser.includes('12 passed'))throw new Error(`production browser suite differs: ${browser.slice(-2000)}`);

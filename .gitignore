@@ -15,3 +15,6 @@ runs/
 run-output/
 
 dist/
+
+node_modules/
+.runs/
