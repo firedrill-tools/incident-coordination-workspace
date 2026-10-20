@@ -1,6 +1,20 @@
-# Incident coordination workspace
+# Incident coordination workspace with CopilotKit, Mastra and Next.js
 
 A Next.js/CopilotKit workspace and Mastra/Anthropic agent coordinate fictional incidents using current telemetry, customer reports and a synthetic Slack mirror. Chat can read and propose a status/owner/summary backed by exact evidence. A separate commander decision changes the incident and records one matching local channel post. No external Slack or service-status provider is connected; commander/monitor names are fixture identities without real authentication.
+
+## Simulate with Firedrill
+
+[Firedrill](https://firedrill.run/) is a simulation platform for AI agents.
+Start from this repository’s root:
+
+```sh
+npx firedrill-run init
+```
+
+Sign in and choose your project, then follow the [simulation run guide](firedrill/README.md)
+for application dependencies, a preview and the reviewed scenarios. Your agent runs
+locally or in your CI; model credentials stay separate from Firedrill sign-in.
+The included recipes record outcomes without an automatic quality score or CI gate.
 
 ## Run locally
 
@@ -72,7 +86,7 @@ node scripts/check-package.mjs
 
 `check-package.mjs` verifies repeated portable deterministic source bytes and the exact manifest, then installs/builds/tests both projects outside checkout. It separately installs production-only backend dependencies and exercises all12 private CLI populations/reset, normal CLI-hosted native Anthropic/Mastra/AG-UI API with separate commander approval, missing-key receipts and SIGTERM cleanup. Original delivered files must remain unchanged. CI retains source, qualification and synthetic browser screenshots. Both install roots retain the qualified version-guarded compatibility repairs documented in backend/frontend scripts/README.md; no vendor/global-cache ownership patch was added.
 
-See [PLAN.md](PLAN.md), [COMPATIBILITY.md](COMPATIBILITY.md) and [scenarios](scenarios/README.md). Actual enabled model/key/budget plus semantic/billing review, qualified new Firedrill saved scenarios/results, real connectors and publication/license remain parked. No paid provider, real Slack action or license is claimed. [Example catalog](https://github.com/firedrill-tools/firedrill-example-catalog), [Firedrill](https://firedrill.run/) and [documentation](https://docs.firedrill.run/) provide portfolio context; matching release qualification is required. Primary APIs: [Anthropic tool use](https://platform.claude.com/docs/claude/docs/tool-use), [Mastra generate](https://mastra.ai/reference/agents/generate), and pinned installed public declarations.
+See [PLAN.md](PLAN.md), [COMPATIBILITY.md](COMPATIBILITY.md) and [scenarios](scenarios/README.md). Actual enabled model/key/budget plus semantic/billing review, authenticated persisted Firedrill scenarios/results, real connectors and publication/license remain parked. No paid provider, real Slack action or license is claimed. [Example catalog](https://github.com/firedrill-tools/firedrill-example-catalog), [Firedrill](https://firedrill.run/) and [documentation](https://docs.firedrill.run/) provide portfolio context; matching release qualification is required. Primary APIs: [Anthropic tool use](https://platform.claude.com/docs/claude/docs/tool-use), [Mastra generate](https://mastra.ai/reference/agents/generate), and pinned installed public declarations.
 
 ## Current Firedrill integration
 
